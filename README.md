@@ -1,0 +1,1 @@
+A simple quantum circuit simulator written in C. Main.c provides a demonstration of Deutsch's algorithm. I'll add a few more sample algorithms later on.

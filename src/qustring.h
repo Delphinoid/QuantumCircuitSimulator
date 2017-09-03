@@ -22,9 +22,9 @@
 */
 typedef double complex qubit[2];
 
-double complex qubitStateProbability(const double complex a);
+double complex qubitStateProbability(const double complex p);
 unsigned char qubitIsValid(const qubit *b);
-void qubitBlochSphere(const qubit *b, float pitch, float yaw, float roll);
+void qubitBlochSphere(const qubit *b, double *x, double *y, double *z);
 
 
 /*

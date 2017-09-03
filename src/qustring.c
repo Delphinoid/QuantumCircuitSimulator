@@ -3,11 +3,11 @@
 #include <float.h>
 #include <string.h>
 
-double complex qubitStateProbability(const double complex a){
+double complex qubitStateProbability(const double complex p){
 	/*
-	** The probability of a state is |a|^2.
+	** The probability of a state is |p|^2.
 	*/
-	double complex sqcabs = cabs(a);
+	double complex sqcabs = cabs(p);
 	return sqcabs*sqcabs;
 }
 
@@ -16,11 +16,27 @@ unsigned char qubitIsValid(const qubit *b){
 	       > 1.0 - DBL_EPSILON;
 }
 
-void qubitBlochSphere(const qubit *b, float pitch, float yaw, float roll){
+void qubitBlochSphere(const qubit *b, double *x, double *y, double *z){
 	/*
-	** Finds the corresponding bloch sphere representation of
-	** the specified qubit.
+	** Finds the corresponding Bloch sphere representation of
+	** the specified qubit. Using the following equivalence,
+	** we can find theta and phi:
+	**
+	** a|0> + B|1> = cos(t/2)|0> + e^(i*p)*sin(t/2)|1>
+	**
+	** From this, we can generate a Bloch sphere:
+	**
+	** (x, y, z) = (sin(t)*cos(p), sin(t)*sin(p), cos(t))
+	**
+	** Where the following holds:
+	**
+	** x^2 + y^2 + z^2 = 1
 	*/
+	double complex theta = acos((*b)[0])*2.0;
+	double complex phi   = theta == 0 ? 0.0 : log((*b)[1] / sin(creal(theta*0.5))) / I;
+	*x = sin(creal(theta)) * cos(creal(phi));
+	*y = sin(creal(theta)) * sin(creal(phi));
+	*z = cos(creal(theta));
 }
 
 unsigned char qustringInit(qustring *q, const size_t n){
@@ -93,6 +109,10 @@ unsigned char qustringIsValid(const qustring *q){
 }
 
 unsigned char qustringGetQubit(const qustring *q, size_t n, qubit *r){
+	/*
+	** Constructs a qubit from the specified state
+	** pair in a qustring.
+	*/
 	n = n<<1;
 	if(++n < q->n){
 		(*r)[1] = q->v[n];
